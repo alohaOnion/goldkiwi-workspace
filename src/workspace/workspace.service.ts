@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class WorkspaceService {
+  constructor(private prisma: PrismaService) {}
   create(createWorkspaceDto: CreateWorkspaceDto) {
-    return 'This action adds a new workspace';
+    return this.prisma.workspace.create({
+      data: createWorkspaceDto,
+    });
   }
 
   findAll() {
-    return `This action returns all workspace`;
+    return this.prisma.workspace.findMany({where: {deletedAt: null}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} workspace`;
+  findOne(id: string) {
+    return this.prisma.workspace.findUnique({
+      where: { id, deletedAt: null },
+    });
   }
 
-  update(id: number, updateWorkspaceDto: UpdateWorkspaceDto) {
-    return `This action updates a #${id} workspace`;
+  update(id: string, updateWorkspaceDto: UpdateWorkspaceDto) {
+    return this.prisma.workspace.update({
+      where: { id, deletedAt: null },
+      data: updateWorkspaceDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} workspace`;
+  remove(id: string) {
+    return this.prisma.workspace.update({
+      where: { id, deletedAt: null },
+      data: { deletedAt: new Date() },
+    });
   }
 }
